@@ -2,6 +2,8 @@ package com.jalolov.customer;
 
 import com.jalolov.clients.fraud.FraudCheckResponse;
 import com.jalolov.clients.fraud.FraudClient;
+import com.jalolov.clients.notification.NotificationClient;
+import com.jalolov.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ public class CustomerService{
 
     private final CustomerRepository customerRepository;
     private final FraudClient fraudClient;
+    private final NotificationClient notificationClient;
 
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
@@ -28,6 +31,11 @@ public class CustomerService{
         if (fraudCheckResponse != null && fraudCheckResponse.isFraudster()) {
             throw new IllegalStateException("fraudster");
         }
-        // todo: check if notification
+        notificationClient.send(
+                new NotificationRequest(customer.getId(),
+                        customer.getEmail(),
+                        "Jalolov",
+                        customer.getFirstName() + ", welcome to application"
+                        ));
     }
 }
