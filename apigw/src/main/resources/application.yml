@@ -9,18 +9,10 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: customer
+        - id: customeк
           uri: lb://CUSTOMER
           predicates:
             - Path=/api/v1/customers/**
-        - id: fraud
-            uri: lb://CUSTOMER
-            predicates:
-              - Path=/api/v1/fraud-check/**
-        - id: notification
-            uri: lb://CUSTOMER
-            predicates:
-              - Path=/api/v1/notification/**
 
 eureka:
   client:

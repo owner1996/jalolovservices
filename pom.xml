@@ -16,6 +16,7 @@
         <module>clients</module>
         <module>notification</module>
         <module>apigw</module>
+        <module>amqp</module>
     </modules>
 
     <name>jalolovservices</name>
@@ -61,6 +62,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <version>4.1.77.Final</version>
+            <classifier>osx-aarch_64</classifier>
         </dependency>
     </dependencies>
 
