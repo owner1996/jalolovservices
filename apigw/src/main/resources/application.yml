@@ -9,7 +9,7 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: customeк
+        - id: customer
           uri: lb://CUSTOMER
           predicates:
             - Path=/api/v1/customers/**
