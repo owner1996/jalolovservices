@@ -1,8 +1,8 @@
 package com.jalolov.customer;
 
+import com.jalolov.amqp.RabbitMQMessageProducer;
 import com.jalolov.clients.fraud.FraudCheckResponse;
 import com.jalolov.clients.fraud.FraudClient;
-import com.jalolov.clients.notification.NotificationClient;
 import com.jalolov.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ public class CustomerService{
 
     private final CustomerRepository customerRepository;
     private final FraudClient fraudClient;
-    private final NotificationClient notificationClient;
+    private final RabbitMQMessageProducer rabbitMQMessageProducer;
 
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
@@ -24,18 +24,21 @@ public class CustomerService{
 
         // todo: check if email valid
         // todo: check if email not taken
-        // todo: check if fraudster
         customerRepository.saveAndFlush(customer);
         FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
 
         if (fraudCheckResponse != null && fraudCheckResponse.isFraudster()) {
             throw new IllegalStateException("fraudster");
         }
-        notificationClient.send(
-                new NotificationRequest(customer.getId(),
-                        customer.getEmail(),
-                        "Jalolov",
-                        customer.getFirstName() + ", welcome to application"
-                        ));
+        NotificationRequest notificationRequest = new NotificationRequest(customer.getId(),
+                customer.getEmail(),
+                "Jalolov",
+                customer.getFirstName() + ", welcome to application"
+        );
+        rabbitMQMessageProducer.publish(
+                notificationRequest,
+                "internal.exchange",
+                "internal.notification.routing-key"
+        );
     }
 }
